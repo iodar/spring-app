@@ -1,0 +1,5 @@
+spring-app:
+  greeting:
+    value: "Hello World"
+  advanced-greeting:
+    value: "Hello World from Spring"
