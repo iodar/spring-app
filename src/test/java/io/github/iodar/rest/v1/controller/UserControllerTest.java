@@ -2,9 +2,9 @@ package io.github.iodar.rest.v1.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.iodar.rest.v1.dto.AdresseDto;
 import io.github.iodar.rest.v1.dto.UserDto;
 import io.github.iodar.service.core.UserService;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +16,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static java.time.LocalDate.of;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -40,19 +39,14 @@ class UserControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
+    @Disabled("Funktion gibt es im User Controller nicht mehr. Muss in Ordnung gebracht werden.")
     @DisplayName("sollte UserDto als Json liefern bei Aufruf ohne Parameter")
     void getUser_ShouldReturnUserDtoWithUserDataAndAddress() throws Exception {
         // Assign
-        final AdresseDto adresseDto = new AdresseDto()
-                .setStrasse("Heimfriedstraße")
-                .setHausnummer("7A")
-                .setOrt("Berlin")
-                .setPostleitzahl("13125");
         final UserDto userDto = new UserDto()
                 .setNachname("Granzow")
                 .setVorname("Dario")
-                .setGeburtstag(of(1996, 5, 31))
-                .setAdresseDto(adresseDto);
+                .setGeburtstag("1996-05-31");
         when(userService.getNewUser()).thenReturn(userDto);
 
         // Act

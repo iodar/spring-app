@@ -1,26 +1,75 @@
 package io.github.iodar.service.core.impl;
 
-import io.github.iodar.rest.v1.dto.AdresseDto;
+import io.github.iodar.persistence.converter.UserDboConverter;
+import io.github.iodar.persistence.repos.UserRepo;
 import io.github.iodar.rest.v1.dto.UserDto;
 import io.github.iodar.service.core.UserService;
+import io.github.iodar.service.core.model.User;
 
+import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static java.time.LocalDate.of;
+import static java.util.Collections.emptyList;
 
 @Named
 public class UserServiceImpl implements UserService {
+
+    private UserDboConverter userDboConverter;
+    private UserRepo userRepo;
+
+    @Inject
+    public UserServiceImpl(final UserDboConverter userDboConverter, final UserRepo userRepo) {
+        this.userDboConverter = userDboConverter;
+        this.userRepo = userRepo;
+    }
+
     @Override
     public UserDto getNewUser() {
-        final AdresseDto adresseDto = new AdresseDto()
-                .setStrasse("Heimfriedstraße")
-                .setHausnummer("7A")
-                .setOrt("Berlin")
-                .setPostleitzahl("13125");
         return new UserDto()
                 .setNachname("Granzow")
                 .setVorname("Dario")
-                .setGeburtstag(of(1996, 5, 31))
-                .setAdresseDto(adresseDto);
+                .setGeburtstag("1996-05-31");
+    }
+
+    @Override
+    public List<User> findAll() {
+        return this.userRepo.findAll().stream()
+                .map(userDbo -> this.userDboConverter.convertToModel(userDbo))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<User> findByNachname(final String nachname) {
+        if (nachname == null) {
+            return emptyList();
+        } else {
+            return this.userRepo.findByNachname(nachname).stream()
+                    .map(userDbo -> this.userDboConverter.convertToModel(userDbo))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public List<User> findByVorname(final String vorname) {
+        if (vorname == null) {
+            return emptyList();
+        } else {
+            return this.userRepo.findByVorname(vorname).stream()
+                    .map(userDbo -> this.userDboConverter.convertToModel(userDbo))
+                    .collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public List<User> findByNachnameAndVorname(final String nachname, final String vorname) {
+        if (vorname == null) {
+            return emptyList();
+        } else {
+            return this.userRepo.findByNachnameAndVorname(nachname, vorname).stream()
+                    .map(userDbo -> this.userDboConverter.convertToModel(userDbo))
+                    .collect(Collectors.toList());
+        }
     }
 }
