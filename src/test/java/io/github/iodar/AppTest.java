@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
  * Unit test for simple App.
  */
 @DisplayName("Spring App")
-public class AppTest {
+class AppTest {
 
     @Test
     @DisplayName("sollte starten")
