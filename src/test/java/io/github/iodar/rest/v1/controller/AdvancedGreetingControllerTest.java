@@ -17,7 +17,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static java.time.LocalDateTime.now;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -63,7 +62,7 @@ class AdvancedGreetingControllerTest {
                 .andDo(print());
     }
 
-    private <T> String toJson(T modelKlasse) throws JsonProcessingException {
+    private String toJson(Object modelKlasse) throws JsonProcessingException {
         return objectMapper.writeValueAsString(modelKlasse);
     }
 }
