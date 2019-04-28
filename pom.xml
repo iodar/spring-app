@@ -117,6 +117,18 @@
             </environmentVariables>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.0.0-M3</version>
+          <goals>
+            <goal>integration-test</goal>
+          </goals>
+          <configuration>
+            <include>*IT.java</include>
+            <include>*ITest.java</include>
+          </configuration>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
