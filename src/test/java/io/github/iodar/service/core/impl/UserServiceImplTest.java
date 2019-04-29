@@ -3,14 +3,19 @@ package io.github.iodar.service.core.impl;
 import io.github.iodar.DBCleanupService;
 import io.github.iodar.TransactionlessTestEntityManager;
 import io.github.iodar.persistence.entities.UserDbo;
+import io.github.iodar.rest.v1.controller.configuration.PostgresContainerConfiguration;
 import io.github.iodar.service.core.model.User;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -21,8 +26,16 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
+@Testcontainers
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
+
+    @Container
+    private static GenericContainer posGenericContainer = new GenericContainer("postgres:10.2")
+            .withEnv("POSTGRES_DB", "postgres")
+            .withEnv("POSTGRES_USER", "postgres")
+            .withEnv("POSTGRES_PASSWORD", "postgres")
+            .withExposedPorts(5432);
 
     @Inject
     private UserServiceImpl userServiceImpl;
