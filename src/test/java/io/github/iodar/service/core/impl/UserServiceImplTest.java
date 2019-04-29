@@ -3,15 +3,16 @@ package io.github.iodar.service.core.impl;
 import io.github.iodar.DBCleanupService;
 import io.github.iodar.TransactionlessTestEntityManager;
 import io.github.iodar.persistence.entities.UserDbo;
-import io.github.iodar.rest.v1.controller.configuration.PostgresContainerConfiguration;
 import io.github.iodar.service.core.model.User;
 import org.hamcrest.MatcherAssert;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ApplicationContextInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -31,11 +32,24 @@ import static org.hamcrest.Matchers.is;
 class UserServiceImplTest {
 
     @Container
-    private static GenericContainer posGenericContainer = new GenericContainer("postgres:10.2")
+    private static GenericContainer postgresContainer = new GenericContainer("postgres:10.2")
             .withEnv("POSTGRES_DB", "postgres")
             .withEnv("POSTGRES_USER", "postgres")
             .withEnv("POSTGRES_PASSWORD", "postgres")
             .withExposedPorts(5432);
+
+    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+        @Override
+        public void initialize(ConfigurableApplicationContext applicationContext) {
+            TestPropertyValues.of(
+                    "spring.datasource.url=" + "jdbc:postgresql://" + postgresContainer.getContainerIpAddress() + ":" + postgresContainer.getMappedPort(5432) + "/postgres",
+                    "spring.datasource.username=" +  postgresContainer.getEnvMap().get("POSTGRES_USER"),
+                    "spring.datasource.database=" + postgresContainer.getEnvMap().get("POSTGRES_DB"),
+                    "spring.datasource.password=" + postgresContainer.getEnvMap().get("POSTGRES_PASSWORD")
+            ).applyTo(applicationContext.getEnvironment());
+        }
+    }
+
 
     @Inject
     private UserServiceImpl userServiceImpl;
