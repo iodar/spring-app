@@ -27,29 +27,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
-@Testcontainers
 @ExtendWith(SpringExtension.class)
 class UserServiceImplTest {
-
-    @Container
-    private static GenericContainer postgresContainer = new GenericContainer("postgres:10.2")
-            .withEnv("POSTGRES_DB", "postgres")
-            .withEnv("POSTGRES_USER", "postgres")
-            .withEnv("POSTGRES_PASSWORD", "postgres")
-            .withExposedPorts(5432);
-
-    static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-        @Override
-        public void initialize(ConfigurableApplicationContext applicationContext) {
-            TestPropertyValues.of(
-                    "spring.datasource.url=" + "jdbc:postgresql://" + postgresContainer.getContainerIpAddress() + ":" + postgresContainer.getMappedPort(5432) + "/postgres",
-                    "spring.datasource.username=" +  postgresContainer.getEnvMap().get("POSTGRES_USER"),
-                    "spring.datasource.database=" + postgresContainer.getEnvMap().get("POSTGRES_DB"),
-                    "spring.datasource.password=" + postgresContainer.getEnvMap().get("POSTGRES_PASSWORD")
-            ).applyTo(applicationContext.getEnvironment());
-        }
-    }
-
 
     @Inject
     private UserServiceImpl userServiceImpl;
