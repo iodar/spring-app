@@ -17,6 +17,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.shaded.org.bouncycastle.util.CollectionStore;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -80,12 +81,49 @@ class UserServiceImplTest {
 
     @Test
     void findByVorname() {
-        Assertions.fail();
+        // prep
+        final UserDbo user = new UserDbo().setVorname("Max");
+        final UserDbo user1 = new UserDbo().setVorname("max");
+        final UserDbo user2 = new UserDbo().setNachname("Max")
+                .setVorname("Peter");
+        final Collection<UserDbo> users = asList(user, user1, user2);
+        persistAllOfAndFlush(users);
+
+        // Act
+        final List<User> usersInDatabase = userServiceImpl.findByVorname("Max");
+
+        // Assert
+        Assertions.assertAll(
+                () -> MatcherAssert.assertThat(usersInDatabase, hasSize(1)),
+                () -> MatcherAssert.assertThat(usersInDatabase.get(0).getVorname(), is("Max"))
+        );
+
     }
 
     @Test
     void findByNachnameAndVorname() {
-        Assertions.fail();
+        // prep
+        final UserDbo user = new UserDbo()
+                .setVorname("Max")
+                .setNachname("Meier");
+        final UserDbo user1 = new UserDbo()
+                .setVorname("max")
+                .setNachname("meier");
+        final UserDbo user2 = new UserDbo()
+                .setNachname("max")
+                .setVorname("Meier");
+        final Collection<UserDbo> users = asList(user, user1, user2);
+        persistAllOfAndFlush(users);
+
+        // Act
+        final List<User> usersInDatabase = userServiceImpl.findByNachnameAndVorname("Meier", "Max");
+
+        // Assert
+        Assertions.assertAll(
+                () -> MatcherAssert.assertThat(usersInDatabase, hasSize(1)),
+                () -> MatcherAssert.assertThat(usersInDatabase.get(0).getVorname(), is("Max")),
+                () -> MatcherAssert.assertThat(usersInDatabase.get(0).getNachname(), is("Meier"))
+        );
     }
 
     private <T> void persistAllOfAndFlush(final Collection<T> collectionOfEntities) {
