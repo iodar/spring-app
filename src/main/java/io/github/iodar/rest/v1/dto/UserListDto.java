@@ -7,6 +7,6 @@ import java.util.List;
 
 @Data
 @Accessors(chain = true)
-public class UserList {
+public class UserListDto {
     private List<UserDto> users;
 }
