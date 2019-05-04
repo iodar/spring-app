@@ -6,15 +6,16 @@ import io.github.iodar.rest.v1.dto.GreetingDto;
 import io.github.iodar.service.core.GreetingService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
+import javax.inject.Inject;
 
 import static java.time.LocalDateTime.now;
 import static org.mockito.Mockito.when;
@@ -26,11 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ExtendWith(SpringExtension.class)
 @DisplayName("Erweiterter Greeting Controller")
 class AdvancedGreetingControllerTest {
 
-    @Autowired
+    @Inject
     private MockMvc mockMvc;
 
     @MockBean
@@ -39,17 +39,17 @@ class AdvancedGreetingControllerTest {
     @Value("${spring-app.advanced-greeting.value}")
     private String value;
 
-    @Autowired
+    @Inject
     private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("sollte Greeting als Json liefern wenn Aufruf ohne Parameter")
     void getGreetingWithoutParamAndJson_ShouldReturnGreetingAsJson() throws Exception {
         // Assign
-        final GreetingDto expectedDto = new GreetingDto()
+        final GreetingDto greetingDto = new GreetingDto()
                 .setGreeting("Hello")
                 .setDateTime(now().toString());
-        when(greetingService.getGreeting()).thenReturn(expectedDto);
+        when(greetingService.getGreeting()).thenReturn(greetingDto);
 
         // Act
         final ResultActions result = mockMvc.perform(get("/advanced/greeting")
@@ -58,8 +58,7 @@ class AdvancedGreetingControllerTest {
         // Assert
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(APPLICATION_JSON))
-                .andExpect(content().json(toJson(expectedDto)))
-                .andDo(print());
+                .andExpect(content().json(toJson(greetingDto)));
     }
 
     private String toJson(Object modelKlasse) throws JsonProcessingException {
