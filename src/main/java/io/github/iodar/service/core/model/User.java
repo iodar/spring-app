@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Accessors(chain = true)
 public class User {
+    private Long userId;
     private String nachname;
     private String vorname;
     private LocalDate geburtsdatum;

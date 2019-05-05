@@ -9,6 +9,7 @@ import io.github.iodar.service.core.model.User;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
@@ -72,4 +73,12 @@ public class UserServiceImpl implements UserService {
                     .collect(Collectors.toList());
         }
     }
+
+    @Override
+    public Optional<User> findByUserId(final Long userId) {
+        return userId == null
+                ? Optional.empty()
+                : Optional.ofNullable(this.userDboConverter.convertToModel(this.userRepo.findByUserId(userId)));
+    }
+
 }

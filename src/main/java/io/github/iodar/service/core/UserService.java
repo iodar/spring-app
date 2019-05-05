@@ -4,6 +4,7 @@ import io.github.iodar.rest.v1.dto.UserDto;
 import io.github.iodar.service.core.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     UserDto getNewUser();
@@ -15,4 +16,6 @@ public interface UserService {
     List<User> findByVorname(final String vorname);
 
     List<User> findByNachnameAndVorname(final String nachname, final String vorname);
+
+    Optional<User> findByUserId(final Long userId);
 }

@@ -14,6 +14,7 @@ public class UserDbo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private Long userId;
     private String nachname;
     private String vorname;
     private LocalDate geburtsdatum;

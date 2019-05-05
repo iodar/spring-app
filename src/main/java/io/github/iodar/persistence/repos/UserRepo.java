@@ -11,4 +11,6 @@ public interface UserRepo extends JpaRepository<UserDbo, Long> {
     List<UserDbo> findByNachname(final String vorname);
 
     List<UserDbo> findByNachnameAndVorname(final String nachname, final String vorname);
+
+    UserDbo findByUserId(Long userId);
 }
