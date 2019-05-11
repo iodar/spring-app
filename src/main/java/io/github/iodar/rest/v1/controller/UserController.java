@@ -34,9 +34,10 @@ public class UserController {
             return getUsersByNachname(nachname);
         } else if (vorname != null) {
             return getUsersByVorname(vorname);
+        } else {
+            return getUsers();
         }
 
-        return null;
     }
 
     @GetMapping("/users/{userId}")
@@ -79,6 +80,12 @@ public class UserController {
     private UserListDto getUsersByVorname(final String vorname) {
         return new UserListDto().setUsers(this.userService.findByVorname(vorname).stream()
                 .map(user -> this.userConverter.convertToDto(user))
+                .collect(Collectors.toList()));
+    }
+
+    private UserListDto getUsers() {
+        return new UserListDto().setUsers(this.userService.findAll().stream()
+                .map(this.userConverter::convertToDto)
                 .collect(Collectors.toList()));
     }
 }
