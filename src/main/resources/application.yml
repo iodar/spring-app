@@ -5,7 +5,7 @@ spring:
     password: "postgres"
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
       use-new-id-generator-mappings: true
 
 spring-app:

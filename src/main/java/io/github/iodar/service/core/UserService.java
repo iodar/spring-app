@@ -18,4 +18,6 @@ public interface UserService {
     List<User> findByNachnameAndVorname(final String nachname, final String vorname);
 
     Optional<User> findByUserId(final Long userId);
+
+    Optional<User> createNewUser(final User user);
 }

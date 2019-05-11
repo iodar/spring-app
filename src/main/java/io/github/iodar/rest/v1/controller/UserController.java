@@ -1,6 +1,7 @@
 package io.github.iodar.rest.v1.controller;
 
 import io.github.iodar.rest.v1.converter.UserConverter;
+import io.github.iodar.rest.v1.dto.ActionDto;
 import io.github.iodar.rest.v1.dto.UserDto;
 import io.github.iodar.rest.v1.dto.UserListDto;
 import io.github.iodar.service.core.UserService;
@@ -44,6 +45,23 @@ public class UserController {
         return user.map(this.userConverter::convertToDto)
                 .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/users")
+    public ResponseEntity<ActionDto> createNewUser(@RequestBody(required = true) final UserDto newUser) {
+        return this.userService.createNewUser(this.userConverter.convertToModel(newUser))
+                .map(user -> {
+                    final ActionDto actionDto = ActionDto.builder()
+                            .message("New user successfully created")
+                            .build();
+                    return ResponseEntity.ok(actionDto);
+                })
+                .orElseGet(() -> {
+                    final ActionDto actionDto = ActionDto.builder()
+                            .message("Creation of new user failed")
+                            .build();
+                    return ResponseEntity.badRequest().body(actionDto);
+                });
     }
 
     private UserListDto getUsersByNachnameAndVorname(final String nachname, final String vorname) {

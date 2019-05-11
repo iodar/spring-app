@@ -1,6 +1,7 @@
 package io.github.iodar.service.core.impl;
 
 import io.github.iodar.persistence.converter.UserDboConverter;
+import io.github.iodar.persistence.entities.UserDbo;
 import io.github.iodar.persistence.repos.UserRepo;
 import io.github.iodar.rest.v1.dto.UserDto;
 import io.github.iodar.service.core.UserService;
@@ -79,6 +80,18 @@ public class UserServiceImpl implements UserService {
         return userId == null
                 ? Optional.empty()
                 : Optional.ofNullable(this.userDboConverter.convertToModel(this.userRepo.findByUserId(userId)));
+    }
+
+    @Override
+    public Optional<User> createNewUser(final User user) {
+        if (user == null) {
+            return Optional.empty();
+        } else {
+            final UserDbo persistedUser = this.userRepo.saveAndFlush(this.userDboConverter.convertToDbo(user));
+            return persistedUser == null
+                    ? Optional.empty()
+                    : Optional.ofNullable(this.userDboConverter.convertToModel(persistedUser));
+        }
     }
 
 }
