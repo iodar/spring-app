@@ -1,4 +1,0 @@
-FROM postgres:10
-
-COPY sql/ddl.sql /docker-entrypoint-initdb.d/ddl.sql
-

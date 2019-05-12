@@ -2,7 +2,7 @@ version: "3"
 
 services:
   app:
-    image: dario/spring-app:latest
+    image: iodar/spring-app:latest
     container_name: spring-app
     ports:
       - "8080:8080"
