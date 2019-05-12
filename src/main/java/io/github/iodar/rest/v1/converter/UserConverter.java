@@ -10,19 +10,6 @@ import java.time.format.DateTimeFormatter;
 @Named
 public class UserConverter {
 
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd");
-
-    public User convertToModel(final UserDto userDto) {
-        if (userDto == null) {
-            return null;
-        } else {
-            return new User()
-                    .setVorname(userDto.getVorname())
-                    .setNachname(userDto.getNachname())
-                    .setGeburtsdatum(toDate(userDto.getGeburtstag()));
-        }
-    }
-
     public UserDto convertToDto(final User user) {
         if (user == null) {
             return null;
@@ -30,15 +17,12 @@ public class UserConverter {
             return new UserDto()
                     .setNachname(user.getNachname())
                     .setVorname(user.getVorname())
-                    .setGeburtstag(fromDate(user.getGeburtsdatum()));
+                    .setGeburtstag(fromDate(user.getGeburtsdatum()))
+                    .setId(user.getId());
         }
     }
 
-    private LocalDate toDate(final String dateString) {
-        return LocalDate.parse(dateString, dateTimeFormatter);
-    }
-
     private String fromDate(final LocalDate date) {
-        return dateTimeFormatter.format(date);
+        return DateTimeFormatter.ISO_DATE.format(date);
     }
 }

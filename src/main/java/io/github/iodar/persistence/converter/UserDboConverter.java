@@ -15,8 +15,7 @@ public class UserDboConverter {
             return new UserDbo()
                     .setVorname(user.getVorname())
                     .setNachname(user.getNachname())
-                    .setGeburtsdatum(user.getGeburtsdatum())
-                    .setUserId(user.getUserId());
+                    .setGeburtsdatum(user.getGeburtsdatum());
         }
     }
 
@@ -28,7 +27,7 @@ public class UserDboConverter {
                     .setVorname(userDbo.getVorname())
                     .setNachname(userDbo.getNachname())
                     .setGeburtsdatum(userDbo.getGeburtsdatum())
-                    .setUserId(userDbo.getUserId());
+                    .setId(userDbo.getId());
         }
     }
 }

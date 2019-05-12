@@ -1,7 +1,9 @@
 package io.github.iodar.rest.v1.controller;
 
+import io.github.iodar.rest.v1.converter.NewUserDtoToModelConverter;
 import io.github.iodar.rest.v1.converter.UserConverter;
 import io.github.iodar.rest.v1.dto.ActionDto;
+import io.github.iodar.rest.v1.dto.NewUserDto;
 import io.github.iodar.rest.v1.dto.UserDto;
 import io.github.iodar.rest.v1.dto.UserListDto;
 import io.github.iodar.service.core.UserService;
@@ -18,11 +20,13 @@ public class UserController {
 
     private UserService userService;
     private UserConverter userConverter;
+    private NewUserDtoToModelConverter newUserDtoToModelConverter;
 
     @Inject
-    public UserController(final UserService userService, final UserConverter userConverter) {
+    public UserController(final UserService userService, final UserConverter userConverter, final NewUserDtoToModelConverter newUserDtoToModelConverter) {
         this.userService = userService;
         this.userConverter = userConverter;
+        this.newUserDtoToModelConverter = newUserDtoToModelConverter;
     }
 
     @GetMapping("/users")
@@ -49,8 +53,8 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<ActionDto> createNewUser(@RequestBody(required = true) final UserDto newUser) {
-        return this.userService.createNewUser(this.userConverter.convertToModel(newUser))
+    public ResponseEntity<ActionDto> createNewUser(@RequestBody() final NewUserDto newUser) {
+        return this.userService.createNewUser(this.newUserDtoToModelConverter.convert(newUser))
                 .map(user -> {
                     final ActionDto actionDto = ActionDto.builder()
                             .message("New user successfully created")

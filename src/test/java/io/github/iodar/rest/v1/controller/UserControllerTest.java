@@ -65,13 +65,13 @@ class UserControllerTest {
         final UserDbo user = new UserDbo()
                 .setNachname("Müller")
                 .setVorname("Peter")
-                .setGeburtsdatum(now())
-                .setUserId(1L);
+                .setGeburtsdatum(now());
+
         final UserDbo persistedUser = transactionlessTestEntityManager.persist(user);
 
         // act
         final ResultActions result = mockMvc.perform(
-                get("/users/{id}", persistedUser.getUserId())
+                get("/users/{id}", persistedUser.getId())
         );
 
         // assert

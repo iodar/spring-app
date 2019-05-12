@@ -79,7 +79,7 @@ public class UserServiceImpl implements UserService {
     public Optional<User> findByUserId(final Long userId) {
         return userId == null
                 ? Optional.empty()
-                : Optional.ofNullable(this.userDboConverter.convertToModel(this.userRepo.findByUserId(userId)));
+                : this.userRepo.findById(userId).map(this.userDboConverter::convertToModel);
     }
 
     @Override
