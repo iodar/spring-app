@@ -15,7 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
-class UserConverterTest {
+class UserConverterITest {
 
     @Inject
     private UserConverter userConverter;

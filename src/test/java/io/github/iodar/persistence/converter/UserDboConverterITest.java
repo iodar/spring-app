@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
-class UserDboConverterTest {
+class UserDboConverterITest {
 
     @Inject
     private UserDboConverter userDboConverter;

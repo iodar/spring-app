@@ -15,7 +15,7 @@ import java.time.format.DateTimeParseException;
 import static org.hamcrest.Matchers.is;
 
 @SpringBootTest
-class NewUserDtoToModelConverterTest {
+class NewUserDtoToModelConverterITest {
 
     @Inject
     private NewUserDtoToModelConverter newUserDtoToModelConverter;
