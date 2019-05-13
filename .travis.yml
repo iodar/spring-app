@@ -1,18 +1,13 @@
 language: java
 sudo: false
+install: true
 
 jobs:
   include:
-    - stage: integration-test
-      install: true
+    - stage: unit tests and integration tests
       script:
-        - mvn clean test-compile surefire:test
-    -
-      install: skip
-      script:
-        - mvn clean test-compile failsafe:integration-test
+        - mvn clean integration-test
     - stage: package and deploy
-      install: true
       script:
         - echo -n $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
         - mvn clean deploy -DskipTests
