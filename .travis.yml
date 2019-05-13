@@ -3,10 +3,13 @@ jdk:
   - openjdk11
 sudo: false
 install: true
+addons:
+  sonarcloud:
+    organization: "iodar-github"
 
 jobs:
   include:
     - stage: tests and deploy
       script:
         - echo -n $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
-        - mvn clean deploy
+        - mvn clean deploy org.jacoco:jacoco-maven-plugin:prepare-agent sonar:sonar
