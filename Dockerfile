@@ -1,4 +1,4 @@
-FROM openjdk:openjdk:11-jdk-stretch
+FROM openjdk:11-jdk-stretch
 
 COPY target/spring-app.jar /spring-app.jar
 
