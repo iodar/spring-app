@@ -1,4 +1,4 @@
-FROM openjdk:8u201-jdk-alpine
+FROM openjdk:openjdk:11-jdk-stretch
 
 COPY target/spring-app.jar /spring-app.jar
 
