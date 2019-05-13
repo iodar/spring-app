@@ -1,0 +1,21 @@
+language: java
+sudo: false
+
+jobs:
+  include:
+    - stage: test
+      script:
+        - mvn clean test
+    - stage: integration-test
+      script:
+        - mvn clean integration-test
+    - stage: package
+      script:
+        - mvn clean package -DskipTests
+    - stage: build-images
+      script:
+        - mvn clean install -DskipTests
+    - stage: push-images
+      script:
+        - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        - mvn clean deploy -DskipTests
