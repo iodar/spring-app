@@ -3,19 +3,13 @@ sudo: false
 
 jobs:
   include:
-    - stage: test
-      script:
-        - mvn clean test
     - stage: integration-test
       script:
-        - mvn clean integration-test
-    - stage: package
+        - mvn clean test-compile surefire:test
+    -
       script:
-        - mvn clean package -DskipTests
-    - stage: build-images
-      script:
-        - mvn clean install -DskipTests
-    - stage: push-images
+        - mvn clean test-compile failsafe:integration-test
+    - stage: package and deploy
       script:
         - echo -n $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
         - mvn clean deploy -DskipTests
