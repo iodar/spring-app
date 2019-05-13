@@ -88,9 +88,7 @@ public class UserServiceImpl implements UserService {
             return Optional.empty();
         } else {
             final UserDbo persistedUser = this.userRepo.saveAndFlush(this.userDboConverter.convertToDbo(user));
-            return persistedUser == null
-                    ? Optional.empty()
-                    : Optional.ofNullable(this.userDboConverter.convertToModel(persistedUser));
+            return Optional.ofNullable(this.userDboConverter.convertToModel(persistedUser));
         }
     }
 
