@@ -4,12 +4,15 @@ sudo: false
 jobs:
   include:
     - stage: integration-test
+      install: true
       script:
         - mvn clean test-compile surefire:test
     -
+      install: skip
       script:
         - mvn clean test-compile failsafe:integration-test
     - stage: package and deploy
+      install: true
       script:
         - echo -n $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
         - mvn clean deploy -DskipTests
