@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 
 @SpringBootTest
 class UserConverterITest {
@@ -40,6 +41,16 @@ class UserConverterITest {
                 () -> assertThat(userDto.getGeburtstag(), is(getIsoDateStringOf(user.getGeburtsdatum())))
         );
 
+    }
+
+    @Test
+    @DisplayName("Converter sollte null zurückgeben, wenn Übergabeparameter null ist")
+    void convertShouldReturnNullWhenGivenNullAsParam() {
+        // act
+        final UserDto userDto = userConverter.convertToDto(null);
+
+        // assert
+        assertThat(userDto, is(nullValue()));
     }
 
     // TODO: dgr 12.05.2019 Ist dieser Test sinnvoll? Wenn es einen Validator gibt, der prüft dass alle
