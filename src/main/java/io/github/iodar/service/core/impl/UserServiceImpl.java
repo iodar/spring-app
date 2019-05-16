@@ -3,7 +3,6 @@ package io.github.iodar.service.core.impl;
 import io.github.iodar.persistence.converter.UserDboConverter;
 import io.github.iodar.persistence.entities.UserDbo;
 import io.github.iodar.persistence.repos.UserRepo;
-import io.github.iodar.rest.v1.dto.UserDto;
 import io.github.iodar.service.core.UserService;
 import io.github.iodar.service.core.model.User;
 
@@ -25,14 +24,6 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(final UserDboConverter userDboConverter, final UserRepo userRepo) {
         this.userDboConverter = userDboConverter;
         this.userRepo = userRepo;
-    }
-
-    @Override
-    public UserDto getNewUser() {
-        return new UserDto()
-                .setNachname("Granzow")
-                .setVorname("Dario")
-                .setGeburtstag("1996-05-31");
     }
 
     @Override

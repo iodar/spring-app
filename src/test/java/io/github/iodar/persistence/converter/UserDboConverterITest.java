@@ -2,7 +2,6 @@ package io.github.iodar.persistence.converter;
 
 import io.github.iodar.persistence.entities.UserDbo;
 import io.github.iodar.service.core.model.User;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +11,7 @@ import java.time.LocalDate;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
@@ -38,8 +38,18 @@ class UserDboConverterITest {
                 () -> assertThat(userDbo.getVorname(), is(user.getVorname())),
                 () -> assertThat(userDbo.getNachname(), is(user.getNachname())),
                 () -> assertThat(userDbo.getGeburtsdatum(), is(user.getGeburtsdatum())),
-                () -> assertThat(userDbo.getId(), is(Matchers.nullValue()))
+                () -> assertThat(userDbo.getId(), is(nullValue()))
         );
+    }
+
+    @Test
+    @DisplayName("Konvertierung Model => Dbo sollte null liefern wenn null übergeben wurde")
+    void convertToDboWithParamNull() {
+        // act
+        final UserDbo userDbo = userDboConverter.convertToDbo(null);
+
+        // assert
+        assertThat(userDbo, is(nullValue()));
     }
 
     @Test
@@ -63,5 +73,15 @@ class UserDboConverterITest {
                 () -> assertThat(user.getGeburtsdatum(), is(userDbo.getGeburtsdatum())),
                 () -> assertThat(user.getId(), is(userDbo.getId()))
         );
+    }
+
+    @Test
+    @DisplayName("Konvertierung Dbo => Model sollte null liefern wenn null übergeben wurde")
+    void convertToModelWithParamNull() {
+        // act
+        final User user = userDboConverter.convertToModel(null);
+
+        // assert
+        assertThat(user, is(nullValue()));
     }
 }

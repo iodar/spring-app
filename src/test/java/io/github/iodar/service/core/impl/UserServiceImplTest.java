@@ -9,20 +9,20 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import javax.inject.Inject;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 
 @DisplayName("User Service")
 @SpringBootTest
@@ -134,6 +134,71 @@ class UserServiceImplTest {
                 () -> MatcherAssert.assertThat(usersInDatabase.get(0).getVorname(), is(vorname)),
                 () -> MatcherAssert.assertThat(usersInDatabase.get(0).getNachname(), is(nachname))
         );
+    }
+
+    @Test
+    @DisplayName("Suche nach Nachname mit Parameter == null sollte null zurückgeben")
+    void whenFindByNachnameIsCalledWithNullShouldReturnNull() {
+        // act
+        final List<User> matchedPersistedUsers = userServiceImpl.findByNachname(null);
+
+        // assert
+        assertThat(matchedPersistedUsers, is(empty()));
+    }
+
+    @Test
+    @DisplayName("Suche nach Vorname mit Parameter == null sollte null zurückgeben")
+    void whenFindByVornameIsCalledWithNullShouldReturnNull() {
+        // act
+        final List<User> matchedPersistedUsers = userServiceImpl.findByVorname(null);
+
+        // assert
+        assertThat(matchedPersistedUsers, is(empty()));
+    }
+
+    @Test
+    @DisplayName("Suche mit Id des Users mit Parameter == null sollte leeres Optional zurückgeben")
+    void whenFindByIdIsCalledWithNullShouldEmptyOptional() {
+        // act
+        final Optional<User> matchedPersistedUser = userServiceImpl.findByUserId(null);
+
+        // assert
+        assertThat(matchedPersistedUser.isEmpty(), is(true));
+    }
+
+    @Test
+    @DisplayName("Sollte neuen Nutzer anlegen und speichern und Persitierten Nutzer zurückgeben")
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    void createNewUserShouldAddNewUserAndReturnThePersistedUser() {
+        //prep
+        final User user = User.builder()
+                .vorname("Peter")
+                .nachname("Müller")
+                .geburtsdatum(LocalDate.of(1986, 1, 1))
+                .build();
+
+        // act
+        final Optional<User> optinalOfpersistedUser = userServiceImpl.createNewUser(user);
+
+        // assert
+        assertThat(optinalOfpersistedUser.isEmpty(), is(false));
+        final User persistedUser = optinalOfpersistedUser.get();
+        Assertions.assertAll(
+                () -> assertThat(persistedUser.getId(), is(notNullValue())),
+                () -> assertThat(persistedUser.getVorname(), is(user.getVorname())),
+                () -> assertThat(persistedUser.getNachname(), is(user.getNachname())),
+                () -> assertThat(persistedUser.getGeburtsdatum(), is(user.getGeburtsdatum()))
+        );
+    }
+
+    @Test
+    @DisplayName("Anlegen eines neuen Nutzer mit Parameter == null sollte leeres Optional zurückgeben")
+    void createUserCalledWithNullValueShouldReturnEmptyOptional() {
+        // act
+        final Optional<User> persistedUser = userServiceImpl.createNewUser(null);
+
+        // assert
+        assertThat(persistedUser.isEmpty(), is(true));
     }
 
     private <T> void persistAllOfAndFlush(final Collection<T> collectionOfEntities) {
