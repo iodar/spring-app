@@ -18,10 +18,12 @@ import javax.inject.Inject;
 
 import static java.time.LocalDate.now;
 import static java.time.LocalDate.of;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.text.IsEmptyString.isEmptyOrNullString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -93,7 +95,13 @@ class UserControllerITest {
                 .nachname(nachname)
                 .geburtsdatum(of(1986, 1, 1))
                 .build();
-        final UserDbo persistedUser = transactionlessTestEntityManager.persistAndFlush(user);
+        final UserDbo user1 = UserDbo.builder()
+                .vorname("Peter-Heinz")
+                .nachname("Müller")
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        asList(user, user1).forEach(transactionlessTestEntityManager::persistAndFlush);
+
 
         // act
         final ResultActions result = mockMvc.perform(
@@ -107,9 +115,95 @@ class UserControllerITest {
         result.andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(is(not(isEmptyOrNullString()))))
-                .andExpect(jsonPath("$.users[0].id", is(persistedUser.getId().intValue())))
+                .andExpect(jsonPath("$.users", hasSize(1)))
                 .andExpect(jsonPath("$.users[0].vorname", is(user.getVorname())))
                 .andExpect(jsonPath("$.users[0].name", is(user.getNachname())));
+    }
+
+    @Test
+    @DisplayName("sollte exakten Nutzer liefern, wenn nur Nachname gegeben")
+    void getUserByNachnameAndVornameGivenOnlyNachnameShouldReturnExactUser() throws Exception {
+        //prep
+        final String vorname = "Peter Heinz";
+        final String nachname = "Müller";
+        final UserDbo user = UserDbo.builder()
+                .vorname(vorname)
+                .nachname(nachname)
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        final UserDbo user1 = UserDbo.builder()
+                .vorname("Peter Mark")
+                .nachname(nachname)
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        final UserDbo user2 = UserDbo.builder()
+                .vorname("Udo")
+                .nachname("Mueller")
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        asList(user, user1, user2).forEach(transactionlessTestEntityManager::persistAndFlush);
+
+        // act
+        final ResultActions result = mockMvc.perform(
+                get("/users")
+                        .param("nachname", nachname)
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        // assert
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(is(not(isEmptyOrNullString()))))
+                .andExpect(jsonPath("$.users", hasSize(2)))
+                // dgr: '?()' queries the elements that match a certain criteria
+                //      '@' refers to the current element or object being processed
+                //
+                //      This query checks whether there is an object in the array 'users'
+                //      that has a property 'name' with the value 'Mueller' and a property
+                //      'vorname' with the value 'Udo'
+                //
+                // @see https://restfulapi.net/json-jsonpath/
+                .andExpect(jsonPath("$.users[?(@.name == 'Mueller' && @.vorname == 'Udo')]").doesNotExist());
+
+    }
+
+    @Test
+    @DisplayName("sollte exakten Nutzer liefern, wenn nur Vorname gegeben")
+    void getUserByNachnameAndVornameGivenOnlyVornameShouldReturnExactUser() throws Exception {
+        //prep
+        final String vorname = "Peter Heinz";
+        final String nachname = "Müller";
+        final UserDbo user = UserDbo.builder()
+                .vorname(vorname)
+                .nachname(nachname)
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        final UserDbo user1 = UserDbo.builder()
+                .vorname(vorname)
+                .nachname("Mueller")
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        final UserDbo user2 = UserDbo.builder()
+                .vorname("Udo")
+                .nachname("Mueller")
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        asList(user, user1, user2).forEach(transactionlessTestEntityManager::persistAndFlush);
+
+        // act
+        final ResultActions result = mockMvc.perform(
+                get("/users")
+                        .param("vorname", vorname)
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        // assert
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(is(not(isEmptyOrNullString()))))
+                .andExpect(jsonPath("$.users", hasSize(2)))
+                .andExpect(jsonPath("$.users[?(@.name == 'Mueller' && @.vorname == 'Udo')]").doesNotExist());
+
     }
 
     private <T> String toJson(T modelKlasse) throws JsonProcessingException {
