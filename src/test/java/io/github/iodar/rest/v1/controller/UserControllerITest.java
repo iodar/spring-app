@@ -207,6 +207,45 @@ class UserControllerITest {
 
     }
 
+    @Test
+    @DisplayName("sollte alle Nutzer liefern, wenn weder Vor- noch Nachname angegeben wurden")
+    void getUserByNachnameAndVornameGivenNoFilterShouldReturnAllUsers() throws Exception {
+        //prep
+        final String vorname = "Peter Heinz";
+        final String nachname = "Müller";
+        final UserDbo user = UserDbo.builder()
+                .vorname(vorname)
+                .nachname(nachname)
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        final UserDbo user1 = UserDbo.builder()
+                .vorname(vorname)
+                .nachname("Mueller")
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        final UserDbo user2 = UserDbo.builder()
+                .vorname("Udo")
+                .nachname("Mueller")
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        asList(user, user1, user2).forEach(transactionlessTestEntityManager::persistAndFlush);
+
+        // act
+        final ResultActions result = mockMvc.perform(
+                get("/users")
+                        .accept(MediaType.APPLICATION_JSON)
+        ).andDo(print());
+
+        // assert
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(is(not(isEmptyOrNullString()))))
+                .andExpect(jsonPath("$.users", hasSize(3)));
+
+    }
+
+
+
     private <T> String toJson(T modelKlasse) throws JsonProcessingException {
         return objectMapper.writeValueAsString(modelKlasse);
     }
