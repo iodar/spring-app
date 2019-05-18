@@ -20,7 +20,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
-        <archive.name>${artifactId}</archive.name>
+        <archive.name>${project.artifactId}</archive.name>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 

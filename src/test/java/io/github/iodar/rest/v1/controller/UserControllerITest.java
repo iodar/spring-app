@@ -10,22 +10,24 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import javax.inject.Inject;
 
 import static java.time.LocalDate.now;
+import static java.time.LocalDate.of;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.text.IsEmptyString.isEmptyOrNullString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @DisplayName("User Controller")
-class UserControllerTest {
+class UserControllerITest {
 
     @Inject
     private MockMvc mockMvc;
@@ -78,6 +80,36 @@ class UserControllerTest {
         result.andExpect(status().isOk())
                 .andExpect(content().string(not(isEmptyOrNullString())));
 
+    }
+
+    @Test
+    @DisplayName("sollte exakten Nutzer liefern, wenn Nachname und Vorname gegeben sind")
+    void getUserByNachnameAndVornameGivenBothParamsShouldReturnExactUser() throws Exception {
+        //prep
+        final String vorname = "Peter Heinz";
+        final String nachname = "Müller";
+        final UserDbo user = UserDbo.builder()
+                .vorname(vorname)
+                .nachname(nachname)
+                .geburtsdatum(of(1986, 1, 1))
+                .build();
+        final UserDbo persistedUser = transactionlessTestEntityManager.persistAndFlush(user);
+
+        // act
+        final ResultActions result = mockMvc.perform(
+                get("/users")
+                        .param("nachname", nachname)
+                        .param("vorname", vorname)
+                        .accept(MediaType.APPLICATION_JSON)
+        );
+
+        // assert
+        result.andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(is(not(isEmptyOrNullString()))))
+                .andExpect(jsonPath("$.users[0].id", is(persistedUser.getId().intValue())))
+                .andExpect(jsonPath("$.users[0].vorname", is(user.getVorname())))
+                .andExpect(jsonPath("$.users[0].name", is(user.getNachname())));
     }
 
     private <T> String toJson(T modelKlasse) throws JsonProcessingException {
