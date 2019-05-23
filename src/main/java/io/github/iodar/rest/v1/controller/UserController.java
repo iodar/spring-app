@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
+import javax.validation.Valid;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<ActionDto> createNewUser(@RequestBody() final NewUserDto newUser) {
+    public ResponseEntity<ActionDto> createNewUser(@Valid @RequestBody final NewUserDto newUser) {
         return this.userService.createNewUser(this.newUserDtoToModelConverter.convert(newUser))
                 .map(user -> {
                     final ActionDto actionDto = ActionDto.builder()

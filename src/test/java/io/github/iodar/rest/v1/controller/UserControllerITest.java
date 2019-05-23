@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -24,6 +25,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.text.IsEmptyString.isEmptyOrNullString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -244,7 +246,111 @@ class UserControllerITest {
 
     }
 
+    @Test
+    @DisplayName("Anlegen eines neuen Users ohne Nachname sollte Fehler erzeugen")
+    void createNewUserWithoutNameShouldThrowException() throws Exception {
+        // prep
+        final String newUserBody = "{\n" +
+                "  \"name\": \"\",\n" +
+                "  \"vorname\": \"Dario\",\n" +
+                "  \"geburtstag\": \"2019-01-01\"\n" +
+                "}";
 
+        // act
+        final ResultActions result = mockMvc.perform(
+                put("/users")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(newUserBody)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+        );
+
+        // assert
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(not(isEmptyOrNullString())))
+                .andExpect(jsonPath("$.status", is(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath("$.fehler", is("Nicht alle Felder konnten verarbeitet werden")));
+    }
+
+    @Test
+    @DisplayName("Anlegen eines neuen Users ohne Geburtsdatum sollte Fehler erzeugen")
+    void createNewUserWithoutDateShouldThrowException() throws Exception {
+        // prep
+        //language=JSON
+        final String newUserBody = "{\n" +
+                "  \"name\": \"Granzow\",\n" +
+                "  \"vorname\": \"Dario\",\n" +
+                "  \"geburtstag\": \"\"\n" +
+                "}";
+
+        // act
+        final ResultActions result = mockMvc.perform(
+                put("/users")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(newUserBody)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+        );
+
+        // assert
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(not(isEmptyOrNullString())))
+                .andExpect(jsonPath("$.status", is(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath("$.fehler", is("Nicht alle Felder konnten verarbeitet werden")));
+    }
+
+    @Test
+    @DisplayName("Anlegen eines neuen Users mit \"null\" als Geburtsdatum sollte Fehler erzeugen")
+    void createNewUserWithNullAsDateShouldThrowException() throws Exception {
+        // prep
+        //language=JSON
+        final String newUserBody = "{\n" +
+                "  \"name\": \"Granzow\",\n" +
+                "  \"vorname\": \"Dario\",\n" +
+                "  \"geburtstag\": null\n" +
+                "}";
+
+        // act
+        final ResultActions result = mockMvc.perform(
+                put("/users")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(newUserBody)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+        );
+
+        // assert
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(not(isEmptyOrNullString())))
+                .andExpect(jsonPath("$.status", is(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath("$.fehler", is("Nicht alle Felder konnten verarbeitet werden")));
+    }
+
+    @Test
+    @DisplayName("Anlegen eines neuen Users mit falschen Datumsformat sollte Fehler erzeugen")
+    void createNewUserWithDateInWrongFormatShouldThrowException() throws Exception {
+        // prep
+        final String newUserBody = "{\n" +
+                "  \"name\": \"Granzow\",\n" +
+                "  \"vorname\": \"Dario\",\n" +
+                "  \"geburtstag\": \"01.01.2019\"\n" +
+                "}";
+
+        // act
+        final ResultActions result = mockMvc.perform(
+                put("/users")
+                        .contentType(MediaType.APPLICATION_JSON_UTF8)
+                        .content(newUserBody)
+                        .accept(MediaType.APPLICATION_JSON_UTF8)
+        );
+
+        // assert
+        result.andExpect(status().isBadRequest())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(content().string(not(isEmptyOrNullString())))
+                .andExpect(jsonPath("$.status", is(HttpStatus.BAD_REQUEST.value())))
+                .andExpect(jsonPath("$.fehler", is("Nicht alle Felder konnten verarbeitet werden")));
+    }
 
     private <T> String toJson(T modelKlasse) throws JsonProcessingException {
         return objectMapper.writeValueAsString(modelKlasse);

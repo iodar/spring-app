@@ -6,6 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @Builder
@@ -14,8 +17,12 @@ import lombok.NoArgsConstructor;
 @JsonPropertyOrder({"nachname", "vorname", "geburtstag"})
 public class NewUserDto {
 
+    @NotEmpty
     @JsonProperty(value = "name")
     private String nachname;
+    @NotEmpty
     private String vorname;
+    @NotEmpty
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private String geburtstag;
 }

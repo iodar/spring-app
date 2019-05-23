@@ -1,12 +1,11 @@
 package io.github.iodar.rest.v1.dto.filter;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Size;
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -14,29 +13,25 @@ import java.nio.charset.StandardCharsets;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserFilterDto {
 
-    public static final int MAX_VORNAME_LENGTH = 255;
-    public static final int MAX_NACHNAME_LENGTH = 255;
-
-    @Size(max = MAX_VORNAME_LENGTH)
     private String vorname;
-    @Size(max = MAX_NACHNAME_LENGTH)
     private String nachname;
 
-    public UserFilterDto setVorname(String vorname) throws UnsupportedEncodingException {
+    public UserFilterDto setVorname(String vorname) {
         this.vorname = urlDecodeIfValuePresent(vorname);
         return this;
     }
 
-    public UserFilterDto setNachname(String nachname) throws UnsupportedEncodingException {
+    public UserFilterDto setNachname(String nachname) {
         this.nachname = urlDecodeIfValuePresent(nachname);
         return this;
     }
 
-    private String urlDecodeIfValuePresent(String value) throws UnsupportedEncodingException {
+    private String urlDecodeIfValuePresent(String value) {
         return value != null
-                ? URLDecoder.decode(value, StandardCharsets.UTF_8.displayName())
+                ? URLDecoder.decode(value, StandardCharsets.UTF_8)
                 : null;
     }
 
