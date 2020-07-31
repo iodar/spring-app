@@ -17,8 +17,8 @@ import static java.util.Collections.emptyList;
 @Named
 public class UserServiceImpl implements UserService {
 
-    private UserDboConverter userDboConverter;
-    private UserRepo userRepo;
+    private final UserDboConverter userDboConverter;
+    private final UserRepo userRepo;
 
     @Inject
     public UserServiceImpl(final UserDboConverter userDboConverter, final UserRepo userRepo) {
@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAll() {
         return this.userRepo.findAll().stream()
-                .map(userDbo -> this.userDboConverter.convertToModel(userDbo))
+                .map(this.userDboConverter::convertToModel)
                 .collect(Collectors.toList());
     }
 
@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
             return emptyList();
         } else {
             return this.userRepo.findByNachname(nachname).stream()
-                    .map(userDbo -> this.userDboConverter.convertToModel(userDbo))
+                    .map(this.userDboConverter::convertToModel)
                     .collect(Collectors.toList());
         }
     }
@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
             return emptyList();
         } else {
             return this.userRepo.findByVorname(vorname).stream()
-                    .map(userDbo -> this.userDboConverter.convertToModel(userDbo))
+                    .map(this.userDboConverter::convertToModel)
                     .collect(Collectors.toList());
         }
     }
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
             return emptyList();
         } else {
             return this.userRepo.findByNachnameAndVorname(nachname, vorname).stream()
-                    .map(userDbo -> this.userDboConverter.convertToModel(userDbo))
+                    .map(this.userDboConverter::convertToModel)
                     .collect(Collectors.toList());
         }
     }
